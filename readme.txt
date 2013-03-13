@@ -1,5 +1,5 @@
 === StatsFC Table ===
-Contributors: WillJW
+Contributors: willjw
 Donate link:
 Tags: widget, football, soccer, premier league
 Requires at least: 3.3

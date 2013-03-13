@@ -39,8 +39,16 @@ class StatsFC_Table extends WP_Widget {
 		parent::__construct(TABLE_ID, TABLE_NAME, array('description' => 'StatsFC League Table'));
 	}
 
+	/**
+	 * Back-end widget form.
+	 *
+	 * @see WP_Widget::form()
+	 *
+	 * @param array $instance Previously saved values from database.
+	 */
 	public function form($instance) {
 		$defaults = array(
+			'title'			=> __('League Table', TABLE_ID),
 			'api_key'		=> __('', TABLE_ID),
 			'type'			=> __('', TABLE_ID),
 			'highlight'		=> __('', TABLE_ID),
@@ -48,11 +56,18 @@ class StatsFC_Table extends WP_Widget {
 		);
 
 		$instance		= wp_parse_args((array) $instance, $defaults);
+		$title			= strip_tags($instance['title']);
 		$api_key		= strip_tags($instance['api_key']);
 		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
+		<p>
+			<label>
+				<?php _e('Title', TABLE_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>">
+			</label>
+		</p>
 		<p>
 			<label>
 				<?php _e('API key', TABLE_ID); ?>:
@@ -79,8 +94,19 @@ class StatsFC_Table extends WP_Widget {
 	<?php
 	}
 
+	/**
+	 * Sanitize widget form values as they are saved.
+	 *
+	 * @see WP_Widget::update()
+	 *
+	 * @param array $new_instance Values just sent to be saved.
+	 * @param array $old_instance Previously saved values from database.
+	 *
+	 * @return array Updated safe values to be saved.
+	 */
 	public function update($new_instance, $old_instance) {
 		$instance					= $old_instance;
+		$instance['title']			= strip_tags($new_instance['title']);
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
 		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
@@ -100,6 +126,7 @@ class StatsFC_Table extends WP_Widget {
 	public function widget($args, $instance) {
 		extract($args);
 
+		$title			= apply_filters('widget_title', $instance['title']);
 		$api_key		= $instance['api_key'];
 		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
@@ -110,84 +137,88 @@ class StatsFC_Table extends WP_Widget {
 
 		$data = file_get_contents('https://api.statsfc.com/premier-league/table.json?key=' . $api_key);
 
-		if (empty($data)) {
-			echo '<p class="statsfc_error">There was an error connecting to the StatsFC API</p>';
-			return;
-		}
+		try {
+			if (empty($data)) {
+				throw new Exception('There was an error connecting to the StatsFC API');
+			}
 
-		$json = json_decode($data);
-		if (isset($json->error)) {
-			echo '<p class="statsfc_error">' . esc_attr($json->error) . '</p>';
-			return;
-		}
+			$json = json_decode($data);
+			if (isset($json->error)) {
+				throw new Exception($json->error);
+				return;
+			}
 
-		if ($default_css) {
-			wp_register_style('prefix-css', plugins_url('c/all.css', __FILE__));
-			wp_enqueue_style('prefix-css');
-		}
-		?>
-		<div class="statsfc_table">
-			<table>
-				<thead>
-					<tr>
-						<th class="statsfc_numeric"></th>
-						<th>Team</th>
-						<th class="statsfc_numeric">P</th>
-						<?php
-						if ($type == 'full') {
-						?>
-							<th class="statsfc_numeric">W</th>
-							<th class="statsfc_numeric">D</th>
-							<th class="statsfc_numeric">L</th>
-							<th class="statsfc_numeric">GF</th>
-							<th class="statsfc_numeric">GA</th>
-						<?php
-						}
-						?>
-						<th class="statsfc_numeric">GD</th>
-						<th class="statsfc_numeric">Pts</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					foreach ($json as $row) {
-						$classes = array();
-
-						if (! empty($row->info)) {
-							$classes[] = 'statsfc_' . esc_attr($row->info);
-						}
-
-						if (! empty($highlight) && $highlight == $row->team) {
-							$classes[] = 'statsfc_highlight';
-						}
-						?>
-						<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
-							<td class="statsfc_numeric"><?php echo esc_attr($row->position); ?></td>
-							<td class="statsfc_team statsfc_badge_<?php echo str_replace(' ', '', strtolower($row->team)); ?>"><?php echo esc_attr($type == 'full' ? $row->team : $row->teamshort); ?></td>
-							<td class="statsfc_numeric"><?php echo esc_attr($row->played); ?></td>
+			if ($default_css) {
+				wp_register_style('prefix-css', plugins_url('c/all.css', __FILE__));
+				wp_enqueue_style('prefix-css');
+			}
+			?>
+			<div class="statsfc_table">
+				<table>
+					<thead>
+						<tr>
+							<th class="statsfc_numeric"></th>
+							<th>Team</th>
+							<th class="statsfc_numeric">P</th>
 							<?php
 							if ($type == 'full') {
 							?>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->won); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->drawn); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->lost); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->for); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->against); ?></td>
+								<th class="statsfc_numeric">W</th>
+								<th class="statsfc_numeric">D</th>
+								<th class="statsfc_numeric">L</th>
+								<th class="statsfc_numeric">GF</th>
+								<th class="statsfc_numeric">GA</th>
 							<?php
 							}
 							?>
-							<td class="statsfc_numeric"><?php echo esc_attr($row->for - $row->against); ?></td>
-							<td class="statsfc_numeric"><?php echo esc_attr($row->points); ?></td>
+							<th class="statsfc_numeric">GD</th>
+							<th class="statsfc_numeric">Pts</th>
 						</tr>
-					<?php
-					}
-					?>
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						<?php
+						foreach ($json as $row) {
+							$classes = array();
 
-			<p class="statsfc_footer"><small>Powered by <a href="https://statsfc.com" target="_blank">StatsFC.com</a></small></p>
-		</div>
+							if (! empty($row->info)) {
+								$classes[] = 'statsfc_' . esc_attr($row->info);
+							}
+
+							if (! empty($highlight) && $highlight == $row->team) {
+								$classes[] = 'statsfc_highlight';
+							}
+							?>
+							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->position); ?></td>
+								<td class="statsfc_team statsfc_badge_<?php echo str_replace(' ', '', strtolower($row->team)); ?>"><?php echo esc_attr($type == 'full' ? $row->team : $row->teamshort); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->played); ?></td>
+								<?php
+								if ($type == 'full') {
+								?>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->won); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->drawn); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->lost); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->for); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->against); ?></td>
+								<?php
+								}
+								?>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->for - $row->against); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->points); ?></td>
+							</tr>
+						<?php
+						}
+						?>
+					</tbody>
+				</table>
+
+				<p class="statsfc_footer"><small>Powered by <a href="https://statsfc.com" target="_blank">StatsFC.com</a></small></p>
+			</div>
 		<?php
+		} catch (Exception $e) {
+			echo '<p class="statsfc_error">' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
+		}
+
 		echo $after_widget;
 	}
 }

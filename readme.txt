@@ -14,6 +14,8 @@ This widget will place a live Premier League table in your website.
 
 Add a Premier League table to your WordPress website. To request an API key sign up for free at [statsfc.com/developers](https://statsfc.com/developers).
 
+For a demo, check out [wp.statsfc.com](http://wp.statsfc.com).
+
 == Installation ==
 
 1. Upload the `statsfc-table` folder and all files to the `/wp-content/plugins/` directory

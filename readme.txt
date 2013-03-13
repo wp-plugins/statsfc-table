@@ -29,7 +29,7 @@ If you want to place the widget into a page rather than a sidebar:
 2. Add a sidebar named "StatsFC Table" from the 'Settings > Widgets on Pages' menu in WordPress
 3. Place the widget anywhere in a page, using the following code:
 
-    [widgets_on_pages id="StatsFC Table"]
+		[widgets_on_pages id="StatsFC Table"]
 
 == Frequently asked questions ==
 

@@ -153,67 +153,65 @@ class StatsFC_Table extends WP_Widget {
 				wp_enqueue_style('prefix-css');
 			}
 			?>
-			<div class="statsfc_table">
-				<table>
-					<thead>
-						<tr>
-							<th class="statsfc_numeric"></th>
-							<th>Team</th>
-							<th class="statsfc_numeric">P</th>
-							<?php
-							if ($type == 'full') {
-							?>
-								<th class="statsfc_numeric">W</th>
-								<th class="statsfc_numeric">D</th>
-								<th class="statsfc_numeric">L</th>
-								<th class="statsfc_numeric">GF</th>
-								<th class="statsfc_numeric">GA</th>
-							<?php
-							}
-							?>
-							<th class="statsfc_numeric">GD</th>
-							<th class="statsfc_numeric">Pts</th>
-						</tr>
-					</thead>
-					<tbody>
+			<table class="statsfc_table">
+				<thead>
+					<tr>
+						<th class="statsfc_numeric"></th>
+						<th>Team</th>
+						<th class="statsfc_numeric">P</th>
 						<?php
-						foreach ($json as $row) {
-							$classes = array();
-
-							if (! empty($row->info)) {
-								$classes[] = 'statsfc_' . esc_attr($row->info);
-							}
-
-							if (! empty($highlight) && $highlight == $row->team) {
-								$classes[] = 'statsfc_highlight';
-							}
-							?>
-							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->position); ?></td>
-								<td class="statsfc_team statsfc_badge_<?php echo str_replace(' ', '', strtolower($row->team)); ?>"><?php echo esc_attr($type == 'full' ? $row->team : $row->teamshort); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->played); ?></td>
-								<?php
-								if ($type == 'full') {
-								?>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->won); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->drawn); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->lost); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->for); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->against); ?></td>
-								<?php
-								}
-								?>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->for - $row->against); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->points); ?></td>
-							</tr>
+						if ($type == 'full') {
+						?>
+							<th class="statsfc_numeric">W</th>
+							<th class="statsfc_numeric">D</th>
+							<th class="statsfc_numeric">L</th>
+							<th class="statsfc_numeric">GF</th>
+							<th class="statsfc_numeric">GA</th>
 						<?php
 						}
 						?>
-					</tbody>
-				</table>
+						<th class="statsfc_numeric">GD</th>
+						<th class="statsfc_numeric">Pts</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					foreach ($json as $row) {
+						$classes = array();
 
-				<p class="statsfc_footer"><small>Powered by <a href="https://statsfc.com" target="_blank">StatsFC.com</a></small></p>
-			</div>
+						if (! empty($row->info)) {
+							$classes[] = 'statsfc_' . esc_attr($row->info);
+						}
+
+						if (! empty($highlight) && $highlight == $row->team) {
+							$classes[] = 'statsfc_highlight';
+						}
+						?>
+						<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
+							<td class="statsfc_numeric"><?php echo esc_attr($row->position); ?></td>
+							<td class="statsfc_team statsfc_badge_<?php echo str_replace(' ', '', strtolower($row->team)); ?>"><?php echo esc_attr($type == 'full' ? $row->team : $row->teamshort); ?></td>
+							<td class="statsfc_numeric"><?php echo esc_attr($row->played); ?></td>
+							<?php
+							if ($type == 'full') {
+							?>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->won); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->drawn); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->lost); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->for); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->against); ?></td>
+							<?php
+							}
+							?>
+							<td class="statsfc_numeric"><?php echo esc_attr($row->for - $row->against); ?></td>
+							<td class="statsfc_numeric"><?php echo esc_attr($row->points); ?></td>
+						</tr>
+					<?php
+					}
+					?>
+				</tbody>
+			</table>
+
+			<p class="statsfc_footer"><small>Powered by <a href="https://statsfc.com" target="_blank" title="Football widgets and API">StatsFC.com</a></small></p>
 		<?php
 		} catch (Exception $e) {
 			echo '<p class="statsfc_error">' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;

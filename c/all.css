@@ -10,7 +10,7 @@
 .statsfc_uefacup td {				background-color: #9C4; }
 .statsfc_relegation td {			background-color: #F77; }
 
-.statsfc_team {						background-repeat: no-repeat; background-position: center left; background-size: 20px 16px; line-height: 25px; padding-left: 25px !important; }
+.statsfc_team {						background-repeat: no-repeat; background-position: center left; background-size: 20px 20px; line-height: 25px; padding-left: 25px !important; }
 .statsfc_badge_arsenal {			background-image: url(../i/arsenal.png); }
 .statsfc_badge_astonvilla {			background-image: url(../i/aston-villa.png); }
 .statsfc_badge_chelsea {			background-image: url(../i/chelsea.png); }

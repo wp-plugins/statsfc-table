@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/developers
 Description: StatsFC League Table
-Version: 1.0
+Version: 1.0.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2

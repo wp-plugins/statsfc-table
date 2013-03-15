@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/developers
 Description: StatsFC League Table
-Version: 1.0.2
+Version: 1.0.3
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -25,8 +25,8 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-define('TABLE_ID',		'StatsFC_Table');
-define('TABLE_NAME',	'StatsFC Table');
+define('STATSFC_TABLE_ID',		'StatsFC_Table');
+define('STATSFC_TABLE_NAME',	'StatsFC Table');
 
 /**
  * Adds StatsFC widget.
@@ -36,7 +36,7 @@ class StatsFC_Table extends WP_Widget {
 	 * Register widget with WordPress.
 	 */
 	public function __construct() {
-		parent::__construct(TABLE_ID, TABLE_NAME, array('description' => 'StatsFC League Table'));
+		parent::__construct(STATSFC_TABLE_ID, STATSFC_TABLE_NAME, array('description' => 'StatsFC League Table'));
 	}
 
 	/**
@@ -48,11 +48,11 @@ class StatsFC_Table extends WP_Widget {
 	 */
 	public function form($instance) {
 		$defaults = array(
-			'title'			=> __('League Table', TABLE_ID),
-			'api_key'		=> __('', TABLE_ID),
-			'type'			=> __('', TABLE_ID),
-			'highlight'		=> __('', TABLE_ID),
-			'default_css'	=> __('', TABLE_ID)
+			'title'			=> __('League Table', STATSFC_TABLE_ID),
+			'api_key'		=> __('', STATSFC_TABLE_ID),
+			'type'			=> __('', STATSFC_TABLE_ID),
+			'highlight'		=> __('', STATSFC_TABLE_ID),
+			'default_css'	=> __('', STATSFC_TABLE_ID)
 		);
 
 		$instance		= wp_parse_args((array) $instance, $defaults);
@@ -64,30 +64,57 @@ class StatsFC_Table extends WP_Widget {
 		?>
 		<p>
 			<label>
-				<?php _e('Title', TABLE_ID); ?>:
+				<?php _e('Title', STATSFC_TABLE_ID); ?>:
 				<input class="widefat" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>">
 			</label>
 		</p>
 		<p>
 			<label>
-				<?php _e('API key', TABLE_ID); ?>:
+				<?php _e('API key', STATSFC_TABLE_ID); ?>:
 				<input class="widefat" name="<?php echo $this->get_field_name('api_key'); ?>" type="text" value="<?php echo esc_attr($api_key); ?>">
 			</label>
 		</p>
 		<p>
-			<?php _e('Type', TABLE_ID); ?>:
+			<?php _e('Type', STATSFC_TABLE_ID); ?>:
 			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
 			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
 		</p>
 		<p>
 			<label>
-				<?php _e('Highlight', TABLE_ID); ?>:
-				<input class="widefat" name="<?php echo $this->get_field_name('highlight'); ?>" type="text" value="<?php echo esc_attr($highlight); ?>">
+				<?php _e('Highlight', STATSFC_TABLE_ID); ?>:
+				<?php
+				$data = file_get_contents('https://api.statsfc.com/premier-league/teams.json?key=' . (! empty($api_key) ? $api_key : 'free'));
+
+				try {
+					if (empty($data)) {
+						throw new Exception('There was an error connecting to the StatsFC API');
+					}
+
+					$json = json_decode($data);
+					if (isset($json->error)) {
+						throw new Exception($json->error);
+					}
+					?>
+					<select class="widefat" name="<?php echo $this->get_field_name('highlight'); ?>">
+						<option></option>
+						<?php
+						foreach ($json as $team) {
+							echo '<option value="' . esc_attr($team->name) . '"' . ($team->name == $highlight ? ' selected' : '') . '>' . esc_attr($team->name) . '</option>' . PHP_EOL;
+						}
+						?>
+					</select>
+				<?php
+				} catch (Exception $e) {
+				?>
+					<input class="widefat" name="<?php echo $this->get_field_name('highlight'); ?>" type="text" value="<?php echo esc_attr($highlight); ?>">
+				<?php
+				}
+				?>
 			</label>
 		</p>
 		<p>
 			<label>
-				<?php _e('Use default CSS?', TABLE_ID); ?>
+				<?php _e('Use default CSS?', STATSFC_TABLE_ID); ?>
 				<input type="checkbox" name="<?php echo $this->get_field_name('default_css'); ?>"<?php echo ($default_css == 'on' ? ' checked' : ''); ?>>
 			</label>
 		</p>
@@ -149,8 +176,8 @@ class StatsFC_Table extends WP_Widget {
 			}
 
 			if ($default_css) {
-				wp_register_style(TABLE_ID . '-css', plugins_url('c/all.css', __FILE__));
-				wp_enqueue_style(TABLE_ID . '-css');
+				wp_register_style(STATSFC_TABLE_ID . '-css', plugins_url('c/all.css', __FILE__));
+				wp_enqueue_style(STATSFC_TABLE_ID . '-css');
 			}
 			?>
 			<div class="statsfc_table">
@@ -224,5 +251,5 @@ class StatsFC_Table extends WP_Widget {
 }
 
 // register StatsFC widget
-add_action('widgets_init', create_function('', 'register_widget("' . TABLE_ID . '");'));
+add_action('widgets_init', create_function('', 'register_widget("' . STATSFC_TABLE_ID . '");'));
 ?>

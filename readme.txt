@@ -37,7 +37,12 @@ If you want to place the widget into a page rather than a sidebar:
 
 == Screenshots ==
 
-
+1. Install the 'Widgets on Pages' widget
+2. Add a 'Widgets on Pages' sidebar for 'StatsFC Table'
+3. Install the 'StatsFC Table' widget
+4. Drag the 'StatsFC Table' widget to the sidebar
+5. Add the 'Widgets on Pages' shortcode to the page
+6. How the widget should look on your page
 
 == Changelog ==
 

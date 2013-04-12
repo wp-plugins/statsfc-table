@@ -1,9 +1,9 @@
-.statsfc_table table {					display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; }
+.statsfc_table table {					display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; margin-bottom: 0; }
 .statsfc_table th,
 .statsfc_table td {						text-align: left; padding: 2px 5px; border-bottom: 1px solid silver; vertical-align: middle; }
 .statsfc_table .statsfc_numeric {		text-align: right; }
 .statsfc_table .statsfc_highlight td {	font-weight: bold; border-top: 2px solid black; border-bottom: 2px solid black; }
-.statsfc_table .statsfc_footer {		display: block !important; text-align: right; }
+.statsfc_table .statsfc_footer {		display: block !important; text-align: right; margin-top: 0; padding: 2px 5px; }
 
 .statsfc_table .statsfc_championsleague td,
 .statsfc_table .statsfc_championsleaguequal td {	background-color: #9CE; }

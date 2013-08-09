@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.1.2
+Version: 1.1.3
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -251,22 +251,34 @@ class StatsFC_Table extends WP_Widget {
 
 	private function _fetchData($url) {
 		if (function_exists('curl_exec')) {
-			$ch = curl_init();
+			return $this->_curlRequest($url);
+		} else {
+			return $this->_fopenRequest($url);
+		}
+	}
 
-			curl_setopt_array($ch, array(
-				CURLOPT_AUTOREFERER		=> true,
-				CURLOPT_HEADER			=> false,
-				CURLOPT_RETURNTRANSFER	=> true,
-				CURLOPT_TIMEOUT			=> 5,
-				CURLOPT_URL				=> $url
-			));
+	private function _curlRequest($url) {
+		$ch = curl_init();
 
-			$data = curl_exec($ch);
-			curl_close($ch);
+		curl_setopt_array($ch, array(
+			CURLOPT_AUTOREFERER		=> true,
+			CURLOPT_HEADER			=> false,
+			CURLOPT_RETURNTRANSFER	=> true,
+			CURLOPT_TIMEOUT			=> 5,
+			CURLOPT_URL				=> $url
+		));
 
-			return $data;
+		$data = curl_exec($ch);
+		if (empty($data)) {
+			$data = $this->_fopenRequest($url);
 		}
 
+		curl_close($ch);
+
+		return $data;
+	}
+
+	private function _fopenRequest($url) {
 		return file_get_contents($url);
 	}
 }

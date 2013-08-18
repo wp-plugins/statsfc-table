@@ -51,6 +51,7 @@ class StatsFC_Table extends WP_Widget {
 			'title'			=> __('League Table', STATSFC_TABLE_ID),
 			'api_key'		=> __('', STATSFC_TABLE_ID),
 			'type'			=> __('', STATSFC_TABLE_ID),
+			'live'			=> __('', STATSFC_TABLE_ID),
 			'highlight'		=> __('', STATSFC_TABLE_ID),
 			'default_css'	=> __('', STATSFC_TABLE_ID)
 		);
@@ -59,6 +60,7 @@ class StatsFC_Table extends WP_Widget {
 		$title			= strip_tags($instance['title']);
 		$api_key		= strip_tags($instance['api_key']);
 		$type			= strip_tags($instance['type']);
+		$live			= strip_tags($instance['live']);
 		$highlight		= strip_tags($instance['highlight']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
@@ -78,6 +80,12 @@ class StatsFC_Table extends WP_Widget {
 			<?php _e('Type', STATSFC_TABLE_ID); ?>:
 			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
 			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('Show live standings?', STATSFC_TABLE_ID); ?>
+				<input type="checkbox" name="<?php echo $this->get_field_name('live'); ?>"<?php echo ($live == 'on' ? ' checked' : ''); ?>>
+			</label>
 		</p>
 		<p>
 			<label>
@@ -136,6 +144,7 @@ class StatsFC_Table extends WP_Widget {
 		$instance['title']			= strip_tags($new_instance['title']);
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
 		$instance['type']			= strip_tags($new_instance['type']);
+		$instance['live']			= strip_tags($new_instance['live']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
@@ -156,6 +165,7 @@ class StatsFC_Table extends WP_Widget {
 		$title			= apply_filters('widget_title', $instance['title']);
 		$api_key		= $instance['api_key'];
 		$type			= $instance['type'];
+		$live			= $instance['live'];
 		$highlight		= $instance['highlight'];
 		$default_css	= $instance['default_css'];
 
@@ -163,7 +173,7 @@ class StatsFC_Table extends WP_Widget {
 		echo $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/premier-league/table.json?key=' . $api_key);
+			$data = $this->_fetchData('https://api.statsfc.com/premier-league/table.json?key=' . $api_key . ($live ? '&live' : ''));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to the StatsFC API');

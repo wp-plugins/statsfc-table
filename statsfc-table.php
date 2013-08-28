@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.1.3
+Version: 1.1.4
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -51,7 +51,6 @@ class StatsFC_Table extends WP_Widget {
 			'title'			=> __('League Table', STATSFC_TABLE_ID),
 			'api_key'		=> __('', STATSFC_TABLE_ID),
 			'type'			=> __('', STATSFC_TABLE_ID),
-			'live'			=> __('', STATSFC_TABLE_ID),
 			'highlight'		=> __('', STATSFC_TABLE_ID),
 			'default_css'	=> __('', STATSFC_TABLE_ID)
 		);
@@ -60,7 +59,6 @@ class StatsFC_Table extends WP_Widget {
 		$title			= strip_tags($instance['title']);
 		$api_key		= strip_tags($instance['api_key']);
 		$type			= strip_tags($instance['type']);
-		$live			= strip_tags($instance['live']);
 		$highlight		= strip_tags($instance['highlight']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
@@ -80,12 +78,6 @@ class StatsFC_Table extends WP_Widget {
 			<?php _e('Type', STATSFC_TABLE_ID); ?>:
 			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
 			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
-		</p>
-		<p>
-			<label>
-				<?php _e('Show live standings?', STATSFC_TABLE_ID); ?>
-				<input type="checkbox" name="<?php echo $this->get_field_name('live'); ?>"<?php echo ($live == 'on' ? ' checked' : ''); ?>>
-			</label>
 		</p>
 		<p>
 			<label>
@@ -144,7 +136,6 @@ class StatsFC_Table extends WP_Widget {
 		$instance['title']			= strip_tags($new_instance['title']);
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
 		$instance['type']			= strip_tags($new_instance['type']);
-		$instance['live']			= strip_tags($new_instance['live']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
@@ -165,7 +156,6 @@ class StatsFC_Table extends WP_Widget {
 		$title			= apply_filters('widget_title', $instance['title']);
 		$api_key		= $instance['api_key'];
 		$type			= $instance['type'];
-		$live			= $instance['live'];
 		$highlight		= $instance['highlight'];
 		$default_css	= $instance['default_css'];
 
@@ -173,7 +163,7 @@ class StatsFC_Table extends WP_Widget {
 		echo $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/premier-league/table.json?key=' . $api_key . ($live ? '&live' : ''));
+			$data = $this->_fetchData('https://api.statsfc.com/premier-league/table.json?key=' . $api_key);
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to the StatsFC API');
@@ -224,26 +214,42 @@ class StatsFC_Table extends WP_Widget {
 							if (! empty($highlight) && $highlight == $row->team) {
 								$classes[] = 'statsfc_highlight';
 							}
-							?>
-							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->position); ?></td>
-								<td class="statsfc_team statsfc_badge_<?php echo str_replace(' ', '', strtolower($row->team)); ?>"><?php echo esc_attr($type == 'full' ? $row->team : $row->teamshort); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->played); ?></td>
-								<?php
-								if ($type == 'full') {
-								?>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->won); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->drawn); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->lost); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->for); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->against); ?></td>
-								<?php
-								}
-								?>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->for - $row->against); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->points); ?></td>
+
+							$classes	= (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : '');
+							$position	= esc_attr($row->position);
+							$teamName	= esc_attr($type == 'full' ? $row->team : $row->teamshort);
+							$teamPath	= esc_attr(str_replace(' ', '-', strtolower($row->team)));
+							$played		= esc_attr($row->played);
+							$details	= '';
+							$difference	= esc_attr($row->for - $row->against);
+							$points		= esc_attr($row->points);
+
+							if ($type == 'full') {
+								$won		= esc_attr($row->won);
+								$drawn		= esc_attr($row->drawn);
+								$lost		= esc_attr($row->lost);
+								$for		= esc_attr($row->for);
+								$against	= esc_attr($row->against);
+								
+								$details = <<< HTML
+								<td class="statsfc_numeric">{$won}</td>
+								<td class="statsfc_numeric">{$drawn}</td>
+								<td class="statsfc_numeric">{$lost}</td>
+								<td class="statsfc_numeric">{$for}</td>
+								<td class="statsfc_numeric">{$against}</td>
+HTML;
+							}
+
+							echo <<< HTML
+							<tr{$classes}>
+								<td class="statsfc_numeric">{$position}</td>
+								<td class="statsfc_team" style="background-image: url(//api.statsfc.com/kit/{$teamPath}.png);">{$teamName}</td>
+								<td class="statsfc_numeric">{$played}</td>
+								{$details}
+								<td class="statsfc_numeric">{$difference}</td>
+								<td class="statsfc_numeric">{$points}</td>
 							</tr>
-						<?php
+HTML;
 						}
 						?>
 					</tbody>

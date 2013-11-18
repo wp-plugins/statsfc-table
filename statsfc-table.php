@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.1.5
+Version: 1.2
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -50,6 +50,8 @@ class StatsFC_Table extends WP_Widget {
 		$defaults = array(
 			'title'			=> __('League Table', STATSFC_TABLE_ID),
 			'api_key'		=> __('', STATSFC_TABLE_ID),
+			'competition'	=> __('', STATSFC_TABLE_ID),
+			'group'			=> __('', STATSFC_TABLE_ID),
 			'type'			=> __('', STATSFC_TABLE_ID),
 			'highlight'		=> __('', STATSFC_TABLE_ID),
 			'default_css'	=> __('', STATSFC_TABLE_ID)
@@ -58,6 +60,8 @@ class StatsFC_Table extends WP_Widget {
 		$instance		= wp_parse_args((array) $instance, $defaults);
 		$title			= strip_tags($instance['title']);
 		$api_key		= strip_tags($instance['api_key']);
+		$competition	= strip_tags($instance['competition']);
+		$group			= strip_tags($instance['group']);
 		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
 		$default_css	= strip_tags($instance['default_css']);
@@ -75,16 +79,11 @@ class StatsFC_Table extends WP_Widget {
 			</label>
 		</p>
 		<p>
-			<?php _e('Type', STATSFC_TABLE_ID); ?>:
-			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
-			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
-		</p>
-		<p>
 			<label>
-				<?php _e('Highlight', STATSFC_TABLE_ID); ?>:
+				<?php _e('Competition', STATSFC_TABLE_ID); ?>:
 				<?php
 				try {
-					$data = $this->_fetchData('https://api.statsfc.com/premier-league/teams.json?key=' . (! empty($api_key) ? $api_key : 'free'));
+					$data = $this->_fetchData('https://api.statsfc.com/competitions.json?type=League&key=' . (! empty($api_key) ? $api_key : 'free'));
 
 					if (empty($data)) {
 						throw new Exception('There was an error connecting to the StatsFC API');
@@ -94,22 +93,47 @@ class StatsFC_Table extends WP_Widget {
 					if (isset($json->error)) {
 						throw new Exception($json->error);
 					}
+
+					$competitions = array();
 					?>
-					<select class="widefat" name="<?php echo $this->get_field_name('highlight'); ?>">
+					<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
 						<option></option>
 						<?php
-						foreach ($json as $team) {
-							echo '<option value="' . esc_attr($team->name) . '"' . ($team->name == $highlight ? ' selected' : '') . '>' . esc_attr($team->name) . '</option>' . PHP_EOL;
+						foreach ($json as $comp) {
+							if (in_array($comp->name, $competitions)) {
+								continue;
+							}
+
+							$competitions[] = $comp->name;
+
+							echo '<option value="' . esc_attr($comp->path) . '"' . ($comp->path == $competition ? ' selected' : '') . '>' . esc_attr($comp->name) . '</option>' . PHP_EOL;
 						}
 						?>
 					</select>
 				<?php
 				} catch (Exception $e) {
 				?>
-					<input class="widefat" name="<?php echo $this->get_field_name('highlight'); ?>" type="text" value="<?php echo esc_attr($highlight); ?>">
+					<input class="widefat" name="<?php echo $this->get_field_name('competition'); ?>" type="text" value="<?php echo esc_attr($competition); ?>">
 				<?php
 				}
 				?>
+			</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('Group', STATSFC_TABLE_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('group'); ?>" type="text" value="<?php echo esc_attr($group); ?>" placeholder="Optional. E.g., A, B, 1, 2">
+			</label>
+		</p>
+		<p>
+			<?php _e('Type', STATSFC_TABLE_ID); ?>:
+			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
+			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('Highlight', STATSFC_TABLE_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('highlight'); ?>" type="text" value="<?php echo esc_attr($highlight); ?>" placeholder="E.g., Liverpool, Swansea City">
 			</label>
 		</p>
 		<p>
@@ -135,6 +159,8 @@ class StatsFC_Table extends WP_Widget {
 		$instance					= $old_instance;
 		$instance['title']			= strip_tags($new_instance['title']);
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
+		$instance['competition']	= strip_tags($new_instance['competition']);
+		$instance['group']			= strip_tags($new_instance['group']);
 		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
@@ -155,6 +181,8 @@ class StatsFC_Table extends WP_Widget {
 
 		$title			= apply_filters('widget_title', $instance['title']);
 		$api_key		= $instance['api_key'];
+		$competition	= $instance['competition'];
+		$group			= $instance['group'];
 		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
 		$default_css	= $instance['default_css'];
@@ -163,7 +191,7 @@ class StatsFC_Table extends WP_Widget {
 		echo $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/premier-league/table.json?key=' . $api_key);
+			$data = $this->_fetchData('https://api.statsfc.com/table.json?competition=' . $competition . (! empty($group) ? '&group=' . $group : '') . '&key=' . $api_key);
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to the StatsFC API');
@@ -172,7 +200,6 @@ class StatsFC_Table extends WP_Widget {
 			$json = json_decode($data);
 			if (isset($json->error)) {
 				throw new Exception($json->error);
-				return;
 			}
 
 			if ($default_css) {
@@ -218,7 +245,7 @@ class StatsFC_Table extends WP_Widget {
 							$classes	= (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : '');
 							$position	= esc_attr($row->position);
 							$teamName	= esc_attr($type == 'full' ? $row->team : $row->teamshort);
-							$teamPath	= esc_attr(str_replace(' ', '-', strtolower($row->team)));
+							$teamPath	= esc_attr($row->teampath);
 							$played		= esc_attr($row->played);
 							$details	= '';
 							$difference	= esc_attr($row->for - $row->against);

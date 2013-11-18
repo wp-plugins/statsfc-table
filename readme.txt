@@ -4,7 +4,7 @@ Donate link:
 Tags: widget, football, soccer, premier league
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.1.5
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ This widget will place a live Premier League table in your website.
 
 == Description ==
 
-Add a Premier League table to your WordPress website. To request an API key sign up for free at [statsfc.com](https://statsfc.com).
+Add a Premier League, Champions League or Europa League table to your WordPress website. To request an API key sign up for free at [statsfc.com](https://statsfc.com).
 
 For a demo, check out [wp.statsfc.com](http://wp.statsfc.com).
 
@@ -65,6 +65,8 @@ If you want to place the widget into a page rather than a sidebar:
 **1.1.4**: More reliable team icons.
 
 **1.1.5**: Added timestamp for debugging.
+
+**1.2**: Opened up to UEFA Champions League and UEFA Europa League group stages groups.
 
 == Upgrade notice ==
 

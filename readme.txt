@@ -4,7 +4,7 @@ Donate link:
 Tags: widget, football, soccer, premier league, uefa, champions league, europa league
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,8 @@ If you want to place the widget into a page rather than a sidebar:
 **1.1.5**: Added timestamp for debugging.
 
 **1.2**: Opened up to UEFA Champions League and UEFA Europa League group stages groups.
+
+**1.2.1**: Tweaked error message.
 
 == Upgrade notice ==
 

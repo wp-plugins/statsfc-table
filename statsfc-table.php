@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.3
+Version: 1.3.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -32,10 +32,6 @@ define('STATSFC_TABLE_NAME',	'StatsFC Table');
  * Adds StatsFC widget.
  */
 class StatsFC_Table extends WP_Widget {
-	private static $competitions = array(
-		'EPL' => 'Premier League'
-	);
-
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -83,14 +79,35 @@ class StatsFC_Table extends WP_Widget {
 		<p>
 			<label>
 				<?php _e('Competition', STATSFC_TABLE_ID); ?>:
-				<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
-					<option></option>
-					<?php
-					foreach (self::$competitions as $key => $name) {
-						echo '<option value="' . esc_attr($key) . '"' . ($key == $competition ? ' selected' : '') . '>' . esc_attr($name) . '</option>' . PHP_EOL;
+				<?php
+				try {
+					$data = $this->_fetchData('https://api.statsfc.com/crowdscores/competitions.php?type=League');
+
+					if (empty($data)) {
+						throw new Exception;
+					}
+
+					$json = json_decode($data);
+
+					if (isset($json->error)) {
+						throw new Exception;
 					}
 					?>
-				</select>
+					<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
+						<option></option>
+						<?php
+						foreach ($json as $comp) {
+							echo '<option value="' . esc_attr($comp->key) . '"' . ($comp->key == $competition ? ' selected' : '') . '>' . esc_attr($comp->name) . '</option>' . PHP_EOL;
+						}
+						?>
+					</select>
+				<?php
+				} catch (Exception $e) {
+				?>
+					<input class="widefat" name="<?php echo $this->get_field_name('competition'); ?>" type="text" value="<?php echo esc_attr($competition); ?>">
+				<?php
+				}
+				?>
 			</label>
 		</p>
 		<p>

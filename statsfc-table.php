@@ -32,6 +32,10 @@ define('STATSFC_TABLE_NAME',	'StatsFC Table');
  * Adds StatsFC widget.
  */
 class StatsFC_Table extends WP_Widget {
+	private static $competitions = array(
+		'EPL' => 'Premier League'
+	);
+
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -81,7 +85,11 @@ class StatsFC_Table extends WP_Widget {
 				<?php _e('Competition', STATSFC_TABLE_ID); ?>:
 				<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
 					<option></option>
-					<option value="EPL">Premier League</option>
+					<?php
+					foreach (self::$competitions as $key => $name) {
+						echo '<option value="' . esc_attr($key) . '"' . ($key == $competition ? ' selected' : '') . '>' . esc_attr($name) . '</option>' . PHP_EOL;
+					}
+					?>
 				</select>
 			</label>
 		</p>

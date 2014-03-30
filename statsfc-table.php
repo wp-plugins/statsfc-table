@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.2.1
+Version: 1.3
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -51,7 +51,6 @@ class StatsFC_Table extends WP_Widget {
 			'title'			=> __('League Table', STATSFC_TABLE_ID),
 			'api_key'		=> __('', STATSFC_TABLE_ID),
 			'competition'	=> __('', STATSFC_TABLE_ID),
-			'group'			=> __('', STATSFC_TABLE_ID),
 			'type'			=> __('', STATSFC_TABLE_ID),
 			'highlight'		=> __('', STATSFC_TABLE_ID),
 			'default_css'	=> __('', STATSFC_TABLE_ID)
@@ -61,7 +60,6 @@ class StatsFC_Table extends WP_Widget {
 		$title			= strip_tags($instance['title']);
 		$api_key		= strip_tags($instance['api_key']);
 		$competition	= strip_tags($instance['competition']);
-		$group			= strip_tags($instance['group']);
 		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
 		$default_css	= strip_tags($instance['default_css']);
@@ -81,48 +79,10 @@ class StatsFC_Table extends WP_Widget {
 		<p>
 			<label>
 				<?php _e('Competition', STATSFC_TABLE_ID); ?>:
-				<?php
-				try {
-					$data = $this->_fetchData('https://api.statsfc.com/competitions.json?type=League&key=' . (! empty($api_key) ? $api_key : 'free'));
-
-					if (empty($data)) {
-						throw new Exception('There was an error connecting to the StatsFC API');
-					}
-
-					$json = json_decode($data);
-					if (isset($json->error)) {
-						throw new Exception($json->error);
-					}
-
-					$competitions = array();
-					?>
-					<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
-						<option></option>
-						<?php
-						foreach ($json as $comp) {
-							if (in_array($comp->name, $competitions)) {
-								continue;
-							}
-
-							$competitions[] = $comp->name;
-
-							echo '<option value="' . esc_attr($comp->path) . '"' . ($comp->path == $competition ? ' selected' : '') . '>' . esc_attr($comp->name) . '</option>' . PHP_EOL;
-						}
-						?>
-					</select>
-				<?php
-				} catch (Exception $e) {
-				?>
-					<input class="widefat" name="<?php echo $this->get_field_name('competition'); ?>" type="text" value="<?php echo esc_attr($competition); ?>">
-				<?php
-				}
-				?>
-			</label>
-		</p>
-		<p>
-			<label>
-				<?php _e('Group', STATSFC_TABLE_ID); ?>:
-				<input class="widefat" name="<?php echo $this->get_field_name('group'); ?>" type="text" value="<?php echo esc_attr($group); ?>" placeholder="Optional. E.g., A, B, 1, 2">
+				<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
+					<option></option>
+					<option value="EPL">Premier League</option>
+				</select>
 			</label>
 		</p>
 		<p>
@@ -160,7 +120,6 @@ class StatsFC_Table extends WP_Widget {
 		$instance['title']			= strip_tags($new_instance['title']);
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
-		$instance['group']			= strip_tags($new_instance['group']);
 		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
@@ -182,7 +141,6 @@ class StatsFC_Table extends WP_Widget {
 		$title			= apply_filters('widget_title', $instance['title']);
 		$api_key		= $instance['api_key'];
 		$competition	= $instance['competition'];
-		$group			= $instance['group'];
 		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
 		$default_css	= $instance['default_css'];
@@ -191,13 +149,14 @@ class StatsFC_Table extends WP_Widget {
 		echo $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/table.json?competition=' . $competition . (! empty($group) ? '&group=' . $group : '') . '&key=' . $api_key);
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?competition=' . $competition . '&key=' . $api_key);
 
 			if (empty($data)) {
-				throw new Exception('There was an error connecting to the StatsFC API');
+				throw new Exception('There was an error connecting to StatsFC.com');
 			}
 
 			$json = json_decode($data);
+
 			if (isset($json->error)) {
 				throw new Exception($json->error);
 			}
@@ -231,7 +190,7 @@ class StatsFC_Table extends WP_Widget {
 					</thead>
 					<tbody>
 						<?php
-						foreach ($json as $row) {
+						foreach ($json->table as $row) {
 							$classes = array();
 
 							if (! empty($row->info)) {
@@ -243,20 +202,20 @@ class StatsFC_Table extends WP_Widget {
 							}
 
 							$classes	= (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : '');
-							$position	= esc_attr($row->position);
-							$teamName	= esc_attr($type == 'full' ? $row->team : $row->teamshort);
-							$teamPath	= esc_attr($row->teampath);
-							$played		= esc_attr($row->played);
+							$position	= esc_attr($row->pos);
+							$teamName	= esc_attr($row->team);
+							$teamPath	= esc_attr($row->path);
+							$played		= esc_attr($row->p);
 							$details	= '';
-							$difference	= esc_attr($row->for - $row->against);
-							$points		= esc_attr($row->points);
+							$difference	= esc_attr($row->gf - $row->ga);
+							$points		= esc_attr($row->pts);
 
 							if ($type == 'full') {
-								$won		= esc_attr($row->won);
-								$drawn		= esc_attr($row->drawn);
-								$lost		= esc_attr($row->lost);
-								$for		= esc_attr($row->for);
-								$against	= esc_attr($row->against);
+								$won		= esc_attr($row->w);
+								$drawn		= esc_attr($row->d);
+								$lost		= esc_attr($row->l);
+								$for		= esc_attr($row->gf);
+								$against	= esc_attr($row->ga);
 								
 								$details = <<< HTML
 								<td class="statsfc_numeric">{$won}</td>
@@ -282,12 +241,12 @@ HTML;
 					</tbody>
 				</table>
 
-				<p class="statsfc_footer"><small>Powered by StatsFC.com</small></p>
+				<p class="statsfc_footer"><small>Powered by StatsFC.com. Fan data via CrowdScores.com</small></p>
 			</div>
 			<!-- <?php echo esc_attr(STATSFC_TABLE_NAME); ?> generated: <?php echo esc_attr(date('c')); ?> -->
 		<?php
 		} catch (Exception $e) {
-			echo '<p style="text-align: center;"><img src="//statsfc.com/i/icon.png" width="64" height="64" alt="Football widgets and API"><br><a href="https://statsfc.com" title="Football widgets and API" target="_blank">StatsFC.com</a> – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
+			echo '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
 		}
 
 		echo $after_widget;

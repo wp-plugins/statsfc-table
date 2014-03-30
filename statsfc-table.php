@@ -225,42 +225,26 @@ class StatsFC_Table extends WP_Widget {
 							if (! empty($highlight) && $highlight == $row->team) {
 								$classes[] = 'statsfc_highlight';
 							}
-
-							$classes	= (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : '');
-							$position	= esc_attr($row->pos);
-							$teamName	= esc_attr($row->team);
-							$teamPath	= esc_attr($row->path);
-							$played		= esc_attr($row->p);
-							$details	= '';
-							$difference	= esc_attr($row->gf - $row->ga);
-							$points		= esc_attr($row->pts);
-
-							if ($type == 'full') {
-								$won		= esc_attr($row->w);
-								$drawn		= esc_attr($row->d);
-								$lost		= esc_attr($row->l);
-								$for		= esc_attr($row->gf);
-								$against	= esc_attr($row->ga);
-								
-								$details = <<< HTML
-								<td class="statsfc_numeric">{$won}</td>
-								<td class="statsfc_numeric">{$drawn}</td>
-								<td class="statsfc_numeric">{$lost}</td>
-								<td class="statsfc_numeric">{$for}</td>
-								<td class="statsfc_numeric">{$against}</td>
-HTML;
-							}
-
-							echo <<< HTML
-							<tr{$classes}>
-								<td class="statsfc_numeric">{$position}</td>
-								<td class="statsfc_team" style="background-image: url(//api.statsfc.com/kit/{$teamPath}.png);">{$teamName}</td>
-								<td class="statsfc_numeric">{$played}</td>
-								{$details}
-								<td class="statsfc_numeric">{$difference}</td>
-								<td class="statsfc_numeric">{$points}</td>
+							?>
+							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->pos); ?></td>
+								<td class="statsfc_team"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : ''); ?>><?php echo esc_attr($row->team); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->p); ?></td>
+								<?php
+								if ($type == 'full') {
+								?>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->w); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->d); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->l); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->gf); ?></td>
+									<td class="statsfc_numeric"><?php echo esc_attr($row->ga); ?></td>
+								<?php
+								}
+								?>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->gf - $row->ga); ?></td>
+								<td class="statsfc_numeric"><?php echo esc_attr($row->pts); ?></td>
 							</tr>
-HTML;
+						<?php
 						}
 						?>
 					</tbody>

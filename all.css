@@ -1,7 +1,7 @@
 .statsfc_table table {					display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; }
 .statsfc_table th,
 .statsfc_table td {						text-align: left; padding: 2px 5px; border-bottom: 1px solid silver; vertical-align: middle; }
-.statsfc_table thead th {				text-transform: uppercase; font-size: small; background-color: silver; border: none; }
+.statsfc_table thead th {				text-transform: uppercase; font-size: small; background-color: silver; }
 .statsfc_table .statsfc_team {			background-repeat: no-repeat; background-position: center left; background-size: 20px 20px; line-height: 25px; padding-left: 25px !important; }
 .statsfc_table .statsfc_numeric {		text-align: right; }
 .statsfc_table .statsfc_highlight td {	font-weight: bold; border-top: 2px solid black; border-bottom: 2px solid black; }

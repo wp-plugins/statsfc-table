@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.3.3
+Version: 1.4
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -53,6 +53,7 @@ class StatsFC_Table extends WP_Widget {
 			'competition'	=> __('', STATSFC_TABLE_ID),
 			'type'			=> __('', STATSFC_TABLE_ID),
 			'highlight'		=> __('', STATSFC_TABLE_ID),
+			'show_form'		=> __('', STATSFC_TABLE_ID),
 			'default_css'	=> __('', STATSFC_TABLE_ID)
 		);
 
@@ -62,6 +63,7 @@ class StatsFC_Table extends WP_Widget {
 		$competition	= strip_tags($instance['competition']);
 		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
+		$show_form		= strip_tags($instance['show_form']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
 		<p>
@@ -123,6 +125,12 @@ class StatsFC_Table extends WP_Widget {
 		</p>
 		<p>
 			<label>
+				<?php _e('Show team form?', STATSFC_TABLE_ID); ?>
+				<input type="checkbox" name="<?php echo $this->get_field_name('show_form'); ?>"<?php echo ($show_form == 'on' ? ' checked' : ''); ?>>
+			</label>
+		</p>
+		<p>
+			<label>
 				<?php _e('Use default CSS?', STATSFC_TABLE_ID); ?>
 				<input type="checkbox" name="<?php echo $this->get_field_name('default_css'); ?>"<?php echo ($default_css == 'on' ? ' checked' : ''); ?>>
 			</label>
@@ -147,6 +155,7 @@ class StatsFC_Table extends WP_Widget {
 		$instance['competition']	= strip_tags($new_instance['competition']);
 		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
+		$instance['show_form']		= strip_tags($new_instance['show_form']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
 		return $instance;
@@ -168,6 +177,7 @@ class StatsFC_Table extends WP_Widget {
 		$competition	= $instance['competition'];
 		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
+		$show_form		= $instance['show_form'];
 		$default_css	= $instance['default_css'];
 
 		echo $before_widget;
@@ -211,6 +221,13 @@ class StatsFC_Table extends WP_Widget {
 							?>
 							<th class="statsfc_numeric">GD</th>
 							<th class="statsfc_numeric">Pts</th>
+							<?php
+							if ($show_form) {
+							?>
+								<th>Form</td>
+							<?php
+							}
+							?>
 						</tr>
 					</thead>
 					<tbody>
@@ -243,6 +260,19 @@ class StatsFC_Table extends WP_Widget {
 								?>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->gf - $row->ga); ?></td>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->pts); ?></td>
+								<?php
+								if ($show_form) {
+								?>
+									<td class="statsfc_form">
+										<?php
+										foreach ($row->form as $result) {
+											echo '<span class="statsfc_form statsfc_' . $result . '">&nbsp;</span>';
+										}
+										?>
+									</td>
+								<?php
+								}
+								?>
 							</tr>
 						<?php
 						}

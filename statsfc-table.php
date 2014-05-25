@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.5
+Version: 1.6
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -32,6 +32,17 @@ define('STATSFC_TABLE_NAME',	'StatsFC Table');
  * Adds StatsFC widget.
  */
 class StatsFC_Table extends WP_Widget {
+	private static $defaults = array(
+		'title'			=> '',
+		'key'			=> '',
+		'competition'	=> '',
+		'date'			=> '',
+		'tableType'		=> 'full',
+		'highlight'		=> '',
+		'showForm'		=> false,
+		'defaultCSS'	=> true
+	);
+
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -47,26 +58,15 @@ class StatsFC_Table extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form($instance) {
-		$defaults = array(
-			'title'			=> __('League Table', STATSFC_TABLE_ID),
-			'api_key'		=> __('', STATSFC_TABLE_ID),
-			'competition'	=> __('', STATSFC_TABLE_ID),
-			'date'			=> __('', STATSFC_TABLE_ID),
-			'type'			=> __('', STATSFC_TABLE_ID),
-			'highlight'		=> __('', STATSFC_TABLE_ID),
-			'show_form'		=> __('', STATSFC_TABLE_ID),
-			'default_css'	=> __('', STATSFC_TABLE_ID)
-		);
-
-		$instance		= wp_parse_args((array) $instance, $defaults);
+		$instance		= wp_parse_args((array) $instance, self::$defaults);
 		$title			= strip_tags($instance['title']);
-		$api_key		= strip_tags($instance['api_key']);
+		$key			= strip_tags($instance['key']);
 		$competition	= strip_tags($instance['competition']);
 		$date			= strip_tags($instance['date']);
-		$type			= strip_tags($instance['type']);
+		$tableType		= strip_tags($instance['tableType']);
 		$highlight		= strip_tags($instance['highlight']);
-		$show_form		= strip_tags($instance['show_form']);
-		$default_css	= strip_tags($instance['default_css']);
+		$showForm		= strip_tags($instance['showForm']);
+		$defaultCSS		= strip_tags($instance['defaultCSS']);
 		?>
 		<p>
 			<label>
@@ -77,7 +77,7 @@ class StatsFC_Table extends WP_Widget {
 		<p>
 			<label>
 				<?php _e('API key', STATSFC_TABLE_ID); ?>:
-				<input class="widefat" name="<?php echo $this->get_field_name('api_key'); ?>" type="text" value="<?php echo esc_attr($api_key); ?>">
+				<input class="widefat" name="<?php echo $this->get_field_name('key'); ?>" type="text" value="<?php echo esc_attr($key); ?>">
 			</label>
 		</p>
 		<p>
@@ -122,8 +122,8 @@ class StatsFC_Table extends WP_Widget {
 		</p>
 		<p>
 			<?php _e('Type', STATSFC_TABLE_ID); ?>:
-			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
-			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
+			<label><input name="<?php echo $this->get_field_name('tableType'); ?>" type="radio" value="full"<?php echo ($tableType == 'full' ? ' checked' : ''); ?>> Full</label>
+			<label><input name="<?php echo $this->get_field_name('tableType'); ?>" type="radio" value="mini"<?php echo ($tableType == 'mini' ? ' checked' : ''); ?>> Mini</label>
 		</p>
 		<p>
 			<label>
@@ -134,13 +134,13 @@ class StatsFC_Table extends WP_Widget {
 		<p>
 			<label>
 				<?php _e('Show team form?', STATSFC_TABLE_ID); ?>
-				<input type="checkbox" name="<?php echo $this->get_field_name('show_form'); ?>"<?php echo ($show_form == 'on' ? ' checked' : ''); ?>>
+				<input type="checkbox" name="<?php echo $this->get_field_name('showForm'); ?>"<?php echo ($showForm == 'on' ? ' checked' : ''); ?>>
 			</label>
 		</p>
 		<p>
 			<label>
 				<?php _e('Use default CSS?', STATSFC_TABLE_ID); ?>
-				<input type="checkbox" name="<?php echo $this->get_field_name('default_css'); ?>"<?php echo ($default_css == 'on' ? ' checked' : ''); ?>>
+				<input type="checkbox" name="<?php echo $this->get_field_name('defaultCSS'); ?>"<?php echo ($defaultCSS == 'on' ? ' checked' : ''); ?>>
 			</label>
 		</p>
 	<?php
@@ -159,13 +159,13 @@ class StatsFC_Table extends WP_Widget {
 	public function update($new_instance, $old_instance) {
 		$instance					= $old_instance;
 		$instance['title']			= strip_tags($new_instance['title']);
-		$instance['api_key']		= strip_tags($new_instance['api_key']);
+		$instance['key']			= strip_tags($new_instance['key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
 		$instance['date']			= strip_tags($new_instance['date']);
-		$instance['type']			= strip_tags($new_instance['type']);
+		$instance['tableType']		= strip_tags($new_instance['tableType']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
-		$instance['show_form']		= strip_tags($new_instance['show_form']);
-		$instance['default_css']	= strip_tags($new_instance['default_css']);
+		$instance['showForm']		= strip_tags($new_instance['showForm']);
+		$instance['defaultCSS']		= strip_tags($new_instance['defaultCSS']);
 
 		return $instance;
 	}
@@ -182,19 +182,19 @@ class StatsFC_Table extends WP_Widget {
 		extract($args);
 
 		$title			= apply_filters('widget_title', $instance['title']);
-		$api_key		= $instance['api_key'];
+		$key			= $instance['key'];
 		$competition	= $instance['competition'];
 		$date			= $instance['date'];
-		$type			= $instance['type'];
+		$tableType		= $instance['tableType'];
 		$highlight		= $instance['highlight'];
-		$show_form		= $instance['show_form'];
-		$default_css	= $instance['default_css'];
+		$showForm		= $instance['showForm'];
+		$defaultCSS		= $instance['defaultCSS'];
 
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($api_key) . '&competition=' . urlencode($competition) . '&date=' . urlencode($date));
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&date=' . urlencode($date));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to StatsFC.com');
@@ -206,7 +206,7 @@ class StatsFC_Table extends WP_Widget {
 				throw new Exception($json->error);
 			}
 
-			if ($default_css) {
+			if ($defaultCSS) {
 				wp_register_style(STATSFC_TABLE_ID . '-css', plugins_url('all.css', __FILE__));
 				wp_enqueue_style(STATSFC_TABLE_ID . '-css');
 			}
@@ -219,7 +219,7 @@ class StatsFC_Table extends WP_Widget {
 							<th>Team</th>
 							<th class="statsfc_numeric">P</th>
 							<?php
-							if ($type == 'full') {
+							if ($tableType == 'full') {
 							?>
 								<th class="statsfc_numeric">W</th>
 								<th class="statsfc_numeric">D</th>
@@ -232,7 +232,7 @@ class StatsFC_Table extends WP_Widget {
 							<th class="statsfc_numeric">GD</th>
 							<th class="statsfc_numeric">Pts</th>
 							<?php
-							if ($show_form) {
+							if ($showForm) {
 							?>
 								<th>Form</td>
 							<?php
@@ -255,10 +255,10 @@ class StatsFC_Table extends WP_Widget {
 							?>
 							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->pos); ?></td>
-								<td class="statsfc_team"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : ''); ?>><?php echo esc_attr($row->team); ?></td>
+								<td class="statsfc_team"<?php echo ($defaultCSS ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : ''); ?>><?php echo esc_attr($row->team); ?></td>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->p); ?></td>
 								<?php
-								if ($type == 'full') {
+								if ($tableType == 'full') {
 								?>
 									<td class="statsfc_numeric"><?php echo esc_attr($row->w); ?></td>
 									<td class="statsfc_numeric"><?php echo esc_attr($row->d); ?></td>
@@ -271,7 +271,7 @@ class StatsFC_Table extends WP_Widget {
 								<td class="statsfc_numeric"><?php echo esc_attr($row->gf - $row->ga); ?></td>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->pts); ?></td>
 								<?php
-								if ($show_form) {
+								if ($showForm) {
 								?>
 									<td class="statsfc_form">
 										<?php
@@ -333,7 +333,15 @@ class StatsFC_Table extends WP_Widget {
 	private function _fopenRequest($url) {
 		return file_get_contents($url);
 	}
+
+	public static function shortcode($atts) {
+		$args = shortcode_atts(self::$defaults, $atts);
+
+		$widget = new self;
+		$widget->widget(array(), $args);
+	}
 }
 
 // register StatsFC widget
 add_action('widgets_init', create_function('', 'register_widget("' . STATSFC_TABLE_ID . '");'));
+add_shortcode('statsfc-table', 'StatsFC_Table::shortcode');

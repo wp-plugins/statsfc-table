@@ -37,10 +37,10 @@ class StatsFC_Table extends WP_Widget {
 		'key'			=> '',
 		'competition'	=> '',
 		'date'			=> '',
-		'tableType'		=> 'full',
+		'type'			=> 'full',
 		'highlight'		=> '',
-		'showForm'		=> false,
-		'defaultCSS'	=> true
+		'show_form'		=> '',
+		'default_css'	=> ''
 	);
 
 	/**
@@ -63,10 +63,10 @@ class StatsFC_Table extends WP_Widget {
 		$key			= strip_tags($instance['key']);
 		$competition	= strip_tags($instance['competition']);
 		$date			= strip_tags($instance['date']);
-		$tableType		= strip_tags($instance['tableType']);
+		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
-		$showForm		= strip_tags($instance['showForm']);
-		$defaultCSS		= strip_tags($instance['defaultCSS']);
+		$show_form		= strip_tags($instance['show_form']);
+		$default_css	= strip_tags($instance['default_css']);
 		?>
 		<p>
 			<label>
@@ -122,8 +122,8 @@ class StatsFC_Table extends WP_Widget {
 		</p>
 		<p>
 			<?php _e('Type', STATSFC_TABLE_ID); ?>:
-			<label><input name="<?php echo $this->get_field_name('tableType'); ?>" type="radio" value="full"<?php echo ($tableType == 'full' ? ' checked' : ''); ?>> Full</label>
-			<label><input name="<?php echo $this->get_field_name('tableType'); ?>" type="radio" value="mini"<?php echo ($tableType == 'mini' ? ' checked' : ''); ?>> Mini</label>
+			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="full"<?php echo ($type == 'full' ? ' checked' : ''); ?>> Full</label>
+			<label><input name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="mini"<?php echo ($type == 'mini' ? ' checked' : ''); ?>> Mini</label>
 		</p>
 		<p>
 			<label>
@@ -134,13 +134,13 @@ class StatsFC_Table extends WP_Widget {
 		<p>
 			<label>
 				<?php _e('Show team form?', STATSFC_TABLE_ID); ?>
-				<input type="checkbox" name="<?php echo $this->get_field_name('showForm'); ?>"<?php echo ($showForm == 'on' ? ' checked' : ''); ?>>
+				<input type="checkbox" name="<?php echo $this->get_field_name('show_form'); ?>"<?php echo ($show_form == 'on' ? ' checked' : ''); ?>>
 			</label>
 		</p>
 		<p>
 			<label>
 				<?php _e('Use default CSS?', STATSFC_TABLE_ID); ?>
-				<input type="checkbox" name="<?php echo $this->get_field_name('defaultCSS'); ?>"<?php echo ($defaultCSS == 'on' ? ' checked' : ''); ?>>
+				<input type="checkbox" name="<?php echo $this->get_field_name('default_css'); ?>"<?php echo ($default_css == 'on' ? ' checked' : ''); ?>>
 			</label>
 		</p>
 	<?php
@@ -162,10 +162,10 @@ class StatsFC_Table extends WP_Widget {
 		$instance['key']			= strip_tags($new_instance['key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
 		$instance['date']			= strip_tags($new_instance['date']);
-		$instance['tableType']		= strip_tags($new_instance['tableType']);
+		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
-		$instance['showForm']		= strip_tags($new_instance['showForm']);
-		$instance['defaultCSS']		= strip_tags($new_instance['defaultCSS']);
+		$instance['show_form']		= strip_tags($new_instance['show_form']);
+		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
 		return $instance;
 	}
@@ -185,10 +185,10 @@ class StatsFC_Table extends WP_Widget {
 		$key			= $instance['key'];
 		$competition	= $instance['competition'];
 		$date			= $instance['date'];
-		$tableType		= $instance['tableType'];
+		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
-		$showForm		= $instance['showForm'];
-		$defaultCSS		= $instance['defaultCSS'];
+		$show_form		= $instance['show_form'];
+		$default_css	= $instance['default_css'];
 
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
@@ -206,7 +206,7 @@ class StatsFC_Table extends WP_Widget {
 				throw new Exception($json->error);
 			}
 
-			if ($defaultCSS) {
+			if ($default_css) {
 				wp_register_style(STATSFC_TABLE_ID . '-css', plugins_url('all.css', __FILE__));
 				wp_enqueue_style(STATSFC_TABLE_ID . '-css');
 			}
@@ -219,7 +219,7 @@ class StatsFC_Table extends WP_Widget {
 							<th>Team</th>
 							<th class="statsfc_numeric">P</th>
 							<?php
-							if ($tableType == 'full') {
+							if ($type == 'full') {
 							?>
 								<th class="statsfc_numeric">W</th>
 								<th class="statsfc_numeric">D</th>
@@ -232,7 +232,7 @@ class StatsFC_Table extends WP_Widget {
 							<th class="statsfc_numeric">GD</th>
 							<th class="statsfc_numeric">Pts</th>
 							<?php
-							if ($showForm) {
+							if ($show_form) {
 							?>
 								<th>Form</td>
 							<?php
@@ -255,10 +255,10 @@ class StatsFC_Table extends WP_Widget {
 							?>
 							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->pos); ?></td>
-								<td class="statsfc_team"<?php echo ($defaultCSS ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : ''); ?>><?php echo esc_attr($row->team); ?></td>
+								<td class="statsfc_team"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : ''); ?>><?php echo esc_attr($row->team); ?></td>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->p); ?></td>
 								<?php
-								if ($tableType == 'full') {
+								if ($type == 'full') {
 								?>
 									<td class="statsfc_numeric"><?php echo esc_attr($row->w); ?></td>
 									<td class="statsfc_numeric"><?php echo esc_attr($row->d); ?></td>
@@ -271,7 +271,7 @@ class StatsFC_Table extends WP_Widget {
 								<td class="statsfc_numeric"><?php echo esc_attr($row->gf - $row->ga); ?></td>
 								<td class="statsfc_numeric"><?php echo esc_attr($row->pts); ?></td>
 								<?php
-								if ($showForm) {
+								if ($show_form) {
 								?>
 									<td class="statsfc_form">
 										<?php

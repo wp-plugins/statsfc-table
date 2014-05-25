@@ -31,7 +31,7 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 - `highlight` (optional): Name of the team you want to highlight, e.g., `Liverpool`
 - `date` (optional): For a back-dated league table, e.g., `2013-12-31`
 - `showForm` (optional): Show form of last 6 matches, `true` or `false`
-- `defaultCSS` (optional): Use the default widget styles
+- `defaultCSS` (optional): Use the default widget styles, `true` or `false`
 
 == Frequently asked questions ==
 

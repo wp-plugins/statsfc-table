@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.6
+Version: 1.6.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -32,6 +32,8 @@ define('STATSFC_TABLE_NAME',	'StatsFC Table');
  * Adds StatsFC widget.
  */
 class StatsFC_Table extends WP_Widget {
+	public $isShortcode = false;
+
 	private static $defaults = array(
 		'title'			=> '',
 		'key'			=> '',
@@ -190,8 +192,8 @@ class StatsFC_Table extends WP_Widget {
 		$show_form		= $instance['show_form'];
 		$default_css	= $instance['default_css'];
 
-		echo $before_widget;
-		echo $before_title . $title . $after_title;
+		$html  = $before_widget;
+		$html .= $before_title . $title . $after_title;
 
 		try {
 			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&date=' . urlencode($date));
@@ -210,7 +212,27 @@ class StatsFC_Table extends WP_Widget {
 				wp_register_style(STATSFC_TABLE_ID . '-css', plugins_url('all.css', __FILE__));
 				wp_enqueue_style(STATSFC_TABLE_ID . '-css');
 			}
-			?>
+
+			$won		= '';
+			$drawn		= '';
+			$lost		= '';
+			$for		= '';
+			$against	= '';
+			$form		= '';
+
+			if ($type == 'full') {
+				$won		= '<th class="statsfc_numeric">W</th>';
+				$drawn		= '<th class="statsfc_numeric">D</th>';
+				$lost		= '<th class="statsfc_numeric">L</th>';
+				$for		= '<th class="statsfc_numeric">GF</th>';
+				$against	= '<th class="statsfc_numeric">GA</th>';
+			}
+
+			if ($show_form) {
+				$form = '<th>Form</td>';
+			}
+
+			$html .= <<< HTML
 			<div class="statsfc_table">
 				<table>
 					<thead>
@@ -218,87 +240,97 @@ class StatsFC_Table extends WP_Widget {
 							<th class="statsfc_numeric"></th>
 							<th>Team</th>
 							<th class="statsfc_numeric">P</th>
-							<?php
-							if ($type == 'full') {
-							?>
-								<th class="statsfc_numeric">W</th>
-								<th class="statsfc_numeric">D</th>
-								<th class="statsfc_numeric">L</th>
-								<th class="statsfc_numeric">GF</th>
-								<th class="statsfc_numeric">GA</th>
-							<?php
-							}
-							?>
+							{$won}
+							{$drawn}
+							{$lost}
+							{$for}
+							{$against}
 							<th class="statsfc_numeric">GD</th>
 							<th class="statsfc_numeric">Pts</th>
-							<?php
-							if ($show_form) {
-							?>
-								<th>Form</td>
-							<?php
-							}
-							?>
+							{$form}
 						</tr>
 					</thead>
 					<tbody>
-						<?php
-						foreach ($json->table as $row) {
-							$classes = array();
+HTML;
 
-							if (! empty($row->info)) {
-								$classes[] = 'statsfc_' . esc_attr($row->info);
-							}
+			foreach ($json->table as $row) {
+				$classes = array();
 
-							if (! empty($highlight) && $highlight == $row->team) {
-								$classes[] = 'statsfc_highlight';
-							}
-							?>
-							<tr<?php echo (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : ''); ?>>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->pos); ?></td>
-								<td class="statsfc_team"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : ''); ?>><?php echo esc_attr($row->team); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->p); ?></td>
-								<?php
-								if ($type == 'full') {
-								?>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->w); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->d); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->l); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->gf); ?></td>
-									<td class="statsfc_numeric"><?php echo esc_attr($row->ga); ?></td>
-								<?php
-								}
-								?>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->gf - $row->ga); ?></td>
-								<td class="statsfc_numeric"><?php echo esc_attr($row->pts); ?></td>
-								<?php
-								if ($show_form) {
-								?>
-									<td class="statsfc_form">
-										<?php
-										foreach ($row->form as $result) {
-											echo '<span class="statsfc_form statsfc_' . $result . '">&nbsp;</span>';
-										}
-										?>
-									</td>
-								<?php
-								}
-								?>
-							</tr>
-						<?php
-						}
-						?>
+				if (! empty($row->info)) {
+					$classes[] = 'statsfc_' . esc_attr($row->info);
+				}
+
+				if (! empty($highlight) && $highlight == $row->team) {
+					$classes[] = 'statsfc_highlight';
+				}
+
+				$class		= (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : '');
+				$position	= esc_attr($row->pos);
+				$badge		= ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : '');
+				$team		= esc_attr($row->team);
+				$played		= esc_attr($row->p);
+				$won		= '';
+				$drawn		= '';
+				$lost		= '';
+				$for		= '';
+				$against	= '';
+				$difference	= esc_attr($row->gf - $row->ga);
+				$points		= esc_attr($row->pts);
+				$form		= '';
+
+				if ($type == 'full') {
+					$won		= '<td class="statsfc_numeric">' . esc_attr($row->w) . '</td>';
+					$drawn		= '<td class="statsfc_numeric">' . esc_attr($row->d) . '</td>';
+					$lost		= '<td class="statsfc_numeric">' . esc_attr($row->l) . '</td>';
+					$for		= '<td class="statsfc_numeric">' . esc_attr($row->gf) . '</td>';
+					$against	= '<td class="statsfc_numeric">' . esc_attr($row->ga) . '</td>';
+				}
+
+				if ($show_form) {
+					$form .= '<td class="statsfc_form">';
+
+					foreach ($row->form as $result) {
+						$form .= '<span class="statsfc_form statsfc_' . $result . '">&nbsp;</span>';
+					}
+
+					$form .= '</td>';
+				}
+
+				$html .= <<< HTML
+				<tr{$class}>
+					<td class="statsfc_numeric">{$pos}</td>
+					<td class="statsfc_team"{$badge}>{$team}</td>
+					<td class="statsfc_numeric">{$played}</td>
+					{$won}
+					{$drawn}
+					{$lost}
+					{$for}
+					{$against}
+					<td class="statsfc_numeric">{$difference}</td>
+					<td class="statsfc_numeric">{$points}</td>
+					{$form}
+				</tr>
+HTML;
+			}
+
+			$html .= <<< HTML
 					</tbody>
 				</table>
 
 				<p class="statsfc_footer"><small>Powered by StatsFC.com. Fan data via CrowdScores.com</small></p>
 			</div>
-			<!-- <?php echo esc_attr(STATSFC_TABLE_NAME); ?> generated: <?php echo esc_attr(date('c')); ?> -->
-		<?php
+HTML;
 		} catch (Exception $e) {
-			echo '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
+			$html .= '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
 		}
 
-		echo $after_widget;
+		$html .= $after_widget;
+
+		if ($this->isShortcode) {
+			return $html;
+		} else {
+			echo $html;
+		}
 	}
 
 	private function _fetchData($url) {
@@ -337,8 +369,10 @@ class StatsFC_Table extends WP_Widget {
 	public static function shortcode($atts) {
 		$args = shortcode_atts(self::$defaults, $atts);
 
-		$widget = new self;
-		$widget->widget(array(), $args);
+		$widget					= new self;
+		$widget->isShortcode	= true;
+
+		return $widget->widget(array(), $args);
 	}
 }
 

@@ -78,7 +78,7 @@ class StatsFC_Table extends WP_Widget {
 		</p>
 		<p>
 			<label>
-				<?php _e('API key', STATSFC_TABLE_ID); ?>:
+				<?php _e('Key', STATSFC_TABLE_ID); ?>:
 				<input class="widefat" name="<?php echo $this->get_field_name('key'); ?>" type="text" value="<?php echo esc_attr($key); ?>">
 			</label>
 		</p>
@@ -321,7 +321,7 @@ HTML;
 			</div>
 HTML;
 		} catch (Exception $e) {
-			$html .= '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
+			$html .= '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) . '</p>' . PHP_EOL;
 		}
 
 		$html .= $after_widget;
@@ -378,4 +378,4 @@ HTML;
 
 // register StatsFC widget
 add_action('widgets_init', create_function('', 'register_widget("' . STATSFC_TABLE_ID . '");'));
-add_shortcode('statsfc-table', 'StatsFC_Table::shortcode');
+add_shortcode('statsfc-table', STATSFC_TABLE_ID . '::shortcode');

@@ -308,7 +308,7 @@ HTML;
 
 				$html .= <<< HTML
 				<tr{$class}>
-					<td class="statsfc_numeric">{$pos}</td>
+					<td class="statsfc_numeric">{$position}</td>
 					<td class="statsfc_team"{$badge}>{$team}</td>
 					<td class="statsfc_numeric">{$played}</td>
 					{$won}

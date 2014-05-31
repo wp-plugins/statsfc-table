@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.6.1
+Version: 1.7
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -41,6 +41,7 @@ class StatsFC_Table extends WP_Widget {
 		'date'			=> '',
 		'type'			=> 'full',
 		'highlight'		=> '',
+		'rows'			=> 0,
 		'show_form'		=> '',
 		'default_css'	=> ''
 	);
@@ -67,6 +68,7 @@ class StatsFC_Table extends WP_Widget {
 		$date			= strip_tags($instance['date']);
 		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
+		$rows			= strip_tags($instance['rows']);
 		$show_form		= strip_tags($instance['show_form']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
@@ -135,6 +137,12 @@ class StatsFC_Table extends WP_Widget {
 		</p>
 		<p>
 			<label>
+				<?php _e('Rows', STATSFC_TABLE_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('rows'); ?>" type="number" min="0" max="24" value="<?php echo esc_attr($rows); ?>" placeholder="E.g., 5, 7">
+			</label>
+		</p>
+		<p>
+			<label>
 				<?php _e('Show team form?', STATSFC_TABLE_ID); ?>
 				<input type="checkbox" name="<?php echo $this->get_field_name('show_form'); ?>"<?php echo ($show_form == 'on' ? ' checked' : ''); ?>>
 			</label>
@@ -166,6 +174,7 @@ class StatsFC_Table extends WP_Widget {
 		$instance['date']			= strip_tags($new_instance['date']);
 		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
+		$instance['rows']			= strip_tags($new_instance['rows']);
 		$instance['show_form']		= strip_tags($new_instance['show_form']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
@@ -189,6 +198,7 @@ class StatsFC_Table extends WP_Widget {
 		$date			= $instance['date'];
 		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
+		$rows			= $instance['rows'];
 		$show_form		= $instance['show_form'];
 		$default_css	= $instance['default_css'];
 
@@ -196,7 +206,7 @@ class StatsFC_Table extends WP_Widget {
 		$html .= $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&date=' . urlencode($date));
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&date=' . urlencode($date) . '&highlight=' . urlencode($highlight) . '&rows=' . urlencode($rows));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to StatsFC.com');

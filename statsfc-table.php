@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.7
+Version: 1.7.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -218,6 +218,9 @@ class StatsFC_Table extends WP_Widget {
 				throw new Exception($json->error);
 			}
 
+			$table		= $json->table;
+			$customer	= $json->customer;
+
 			if ($default_css) {
 				wp_register_style(STATSFC_TABLE_ID . '-css', plugins_url('all.css', __FILE__));
 				wp_enqueue_style(STATSFC_TABLE_ID . '-css');
@@ -263,7 +266,7 @@ class StatsFC_Table extends WP_Widget {
 					<tbody>
 HTML;
 
-			foreach ($json->table as $row) {
+			foreach ($table as $row) {
 				$classes = array();
 
 				if (! empty($row->info)) {
@@ -326,8 +329,15 @@ HTML;
 			$html .= <<< HTML
 					</tbody>
 				</table>
+HTML;
 
+			if ($customer->advert) {
+				$html .= <<< HTML
 				<p class="statsfc_footer"><small>Powered by StatsFC.com. Fan data via CrowdScores.com</small></p>
+HTML;
+			}
+
+			$html .= <<< HTML
 			</div>
 HTML;
 		} catch (Exception $e) {

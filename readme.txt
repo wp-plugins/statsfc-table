@@ -29,6 +29,7 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 - `competition` (required): Competition key, e.g., `EPL`
 - `type` (optional): Type of league table, `full` or `mini`
 - `highlight` (optional): Name of the team you want to highlight, e.g., `Liverpool`
+- `rows` (optional, *used in conjunction with `highlight`*): Number of rows you want to show, e.g., `3`, `5`
 - `date` (optional): For a back-dated league table, e.g., `2013-12-31`
 - `show_form` (optional): Show form of last 6 matches, `true` or `false`
 - `default_css` (optional): Use the default widget styles, `true` or `false`

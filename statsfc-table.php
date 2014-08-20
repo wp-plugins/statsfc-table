@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.7.1
+Version: 1.7.2
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -279,7 +279,7 @@ HTML;
 
 				$class		= (! empty($classes) ? ' class="' . implode(' ', $classes) . '"' : '');
 				$position	= esc_attr($row->pos);
-				$badge		= ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.png);"' : '');
+				$badge		= ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($row->path) . '.svg);"' : '');
 				$team		= esc_attr($row->team);
 				$played		= esc_attr($row->p);
 				$won		= '';

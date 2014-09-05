@@ -3,8 +3,8 @@ Contributors: willjw
 Donate link:
 Tags: widget, football, soccer, premier league, uefa, champions league, europa league
 Requires at least: 3.3
-Tested up to: 3.9
-Stable tag: 1.7.4
+Tested up to: 4.0
+Stable tag: 1.7.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,8 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 **1.7.3**: Default `default_css` parameter to `true`
 
 **1.7.4**: Added badge class for each team
+
+**1.7.5**: Use built-in WordPress HTTP API functions
 
 == Upgrade notice ==
 

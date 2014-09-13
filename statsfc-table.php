@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.7.5
+Version: 1.7.6
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -38,6 +38,7 @@ class StatsFC_Table extends WP_Widget {
 		'title'			=> '',
 		'key'			=> '',
 		'competition'	=> '',
+		'group'			=> '',
 		'date'			=> '',
 		'type'			=> 'full',
 		'highlight'		=> '',
@@ -65,6 +66,7 @@ class StatsFC_Table extends WP_Widget {
 		$title			= strip_tags($instance['title']);
 		$key			= strip_tags($instance['key']);
 		$competition	= strip_tags($instance['competition']);
+		$group			= strip_tags($instance['group']);
 		$date			= strip_tags($instance['date']);
 		$type			= strip_tags($instance['type']);
 		$highlight		= strip_tags($instance['highlight']);
@@ -120,6 +122,12 @@ class StatsFC_Table extends WP_Widget {
 		</p>
 		<p>
 			<label>
+				<?php _e('Group', STATSFC_TABLE_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('group'); ?>" type="text" value="<?php echo esc_attr($group); ?>" placeholder="Optional. E.g., A, B">
+			</label>
+		</p>
+		<p>
+			<label>
 				<?php _e('Date (YYYY-MM-DD)', STATSFC_TABLE_ID); ?>:
 				<input class="widefat" name="<?php echo $this->get_field_name('date'); ?>" type="text" value="<?php echo esc_attr($date); ?>" placeholder="YYYY-MM-DD">
 			</label>
@@ -171,6 +179,7 @@ class StatsFC_Table extends WP_Widget {
 		$instance['title']			= strip_tags($new_instance['title']);
 		$instance['key']			= strip_tags($new_instance['key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
+		$instance['group']			= strip_tags($new_instance['group']);
 		$instance['date']			= strip_tags($new_instance['date']);
 		$instance['type']			= strip_tags($new_instance['type']);
 		$instance['highlight']		= strip_tags($new_instance['highlight']);
@@ -195,6 +204,7 @@ class StatsFC_Table extends WP_Widget {
 		$title			= apply_filters('widget_title', $instance['title']);
 		$key			= $instance['key'];
 		$competition	= $instance['competition'];
+		$group			= $instance['group'];
 		$date			= $instance['date'];
 		$type			= $instance['type'];
 		$highlight		= $instance['highlight'];
@@ -206,7 +216,7 @@ class StatsFC_Table extends WP_Widget {
 		$html .= $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&date=' . urlencode($date) . '&highlight=' . urlencode($highlight) . '&rows=' . urlencode($rows));
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/table.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&group=' . urlencode($group) . '&date=' . urlencode($date) . '&highlight=' . urlencode($highlight) . '&rows=' . urlencode($rows));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to StatsFC.com');

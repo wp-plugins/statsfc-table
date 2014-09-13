@@ -4,7 +4,7 @@ Donate link:
 Tags: widget, football, soccer, premier league, uefa, champions league, europa league
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 1.7.5
+Stable tag: 1.7.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,7 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 
 - `key` (required): Your StatsFC key
 - `competition` (required): Competition key, e.g., `EPL`
+- `group` (optional): Competition group, e.g., `A`, `B`
 - `type` (optional): Type of league table, `full` or `mini`
 - `highlight` (optional): Name of the team you want to highlight, e.g., `Liverpool`
 - `rows` (optional, *used in conjunction with `highlight`*): Number of rows you want to show, e.g., `3`, `5`
@@ -89,6 +90,8 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 **1.7.4**: Added badge class for each team
 
 **1.7.5**: Use built-in WordPress HTTP API functions
+
+**1.7.6**: Added `group` parameter
 
 == Upgrade notice ==
 

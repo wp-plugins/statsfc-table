@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC League Table
-Version: 1.7.6
+Version: 1.8
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -340,6 +340,15 @@ HTML;
 					</tbody>
 				</table>
 HTML;
+
+			if ($customer->adSupported) {
+				wp_register_script(STATSFC_TABLE_ID . '-ad-js', plugins_url('ad.js', __FILE__), array('jquery'));
+				wp_enqueue_script(STATSFC_TABLE_ID . '-ad-js');
+
+				$html .= <<< HTML
+				<div class="statsfc_ad"></div>
+HTML;
+			}
 
 			if ($customer->attribution) {
 				$html .= <<< HTML

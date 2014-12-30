@@ -12,9 +12,9 @@ This widget will place a live Premier League, Champions League or Europa League 
 
 == Description ==
 
-Add a Premier League, Champions League or Europa League table to your WordPress website. To request an API key sign up for free at [statsfc.com](https://statsfc.com).
+Add a Premier League, Champions League or Europa League table to your WordPress website. To request a key sign up for your free trial at [statsfc.com](https://statsfc.com).
 
-For a demo, check out [wp.statsfc.com](http://wp.statsfc.com).
+For a demo, check out [wp.statsfc.com/league-table/](http://wp.statsfc.com/league-table/).
 
 == Installation ==
 

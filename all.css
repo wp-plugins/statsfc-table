@@ -10,7 +10,6 @@
 .statsfc_table .statsfc_W {				background: #2A2; }
 .statsfc_table .statsfc_D {				background: orange; }
 .statsfc_table .statsfc_L {				background: #F33; }
-.statsfc_table .statsfc_ad {			display: block !important; text-align: center; margin-top: 10px; }
 .statsfc_table .statsfc_footer {		display: block !important; text-align: right; }
 
 .statsfc_table .statsfc_championsleague td,

@@ -3,16 +3,16 @@ Contributors: willjw
 Donate link:
 Tags: widget, football, soccer, premier league, uefa, champions league, europa league
 Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 1.8.1
+Tested up to: 4.2.2
+Stable tag: 1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This widget will place a live Premier League, Champions League or Europa League table on your website.
+This widget will place a football league table on your website.
 
 == Description ==
 
-Add a Premier League, Champions League or Europa League table to your WordPress website. To request a key sign up for your free trial at [statsfc.com](https://statsfc.com).
+Add a football league table to your WordPress website. To request a key sign up for your free trial at [statsfc.com](https://statsfc.com).
 
 For a demo, check out [wp.statsfc.com/league-table/](http://wp.statsfc.com/league-table/).
 
@@ -32,6 +32,7 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 - `highlight` (optional): Name of the team you want to highlight, e.g., `Liverpool`
 - `rows` (optional, *used in conjunction with `highlight`*): Number of rows you want to show, e.g., `3`, `5`
 - `date` (optional): For a back-dated league table, e.g., `2013-12-31`
+- `show_badges` (optional): Display team badges, `true` or `false`
 - `show_form` (optional): Show form of last 6 matches, `true` or `false`
 - `default_css` (optional): Use the default widget styles, `true` or `false`
 
@@ -96,6 +97,8 @@ You can also use the `[statsfc-table]` shortcode, with the following options:
 **1.8**: Enabled ad-support
 
 **1.8.1**: Allow more discrete ads for ad-supported accounts
+
+**1.9**: Added `show_badges` parameter
 
 == Upgrade notice ==
 

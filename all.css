@@ -1,18 +1,19 @@
-.statsfc_table table {					display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; }
-.statsfc_table th,
-.statsfc_table td {						text-align: left; padding: 2px 5px; border-bottom: 1px solid silver; vertical-align: middle; }
-.statsfc_table thead th {				text-transform: uppercase; font-size: small; background-color: silver; }
-.statsfc_table .statsfc_team {			background-repeat: no-repeat; background-position: center left; background-size: 20px 20px; line-height: 25px; padding-left: 25px !important; }
-.statsfc_table .statsfc_numeric {		text-align: right; }
-.statsfc_table .statsfc_highlight td {	font-weight: bold; border-top: 2px solid black; border-bottom: 2px solid black; }
-.statsfc_table td.statsfc_form {		white-space: nowrap; }
-.statsfc_table span.statsfc_form {		display: inline-block; width: 10px; margin: 0 1px; border-radius: 2px; }
-.statsfc_table .statsfc_W {				background: #2A2; }
-.statsfc_table .statsfc_D {				background: orange; }
-.statsfc_table .statsfc_L {				background: #F33; }
-.statsfc_table .statsfc_footer {		display: block !important; text-align: right; }
+div.sfc_table table {				display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; }
+div.sfc_table th,
+div.sfc_table td {					text-align: left; padding: 2px 5px; border-bottom: 1px solid silver; vertical-align: middle; }
+div.sfc_table thead th {			text-transform: uppercase; font-size: small; background-color: silver; }
+div.sfc_table .sfc_numeric {		text-align: right; }
+div.sfc_table tr.sfc_top1 td,
+div.sfc_table tr.sfc_top2 td {		background-color: #9CE; }
+div.sfc_table tr.sfc_top3 td {	    background-color: #8BD; }
+div.sfc_table tr.sfc_top4 td {		background-color: #9C4; }
+div.sfc_table tr.sfc_bottom1 td {	background-color: #F77; }
+div.sfc_table tr.sfc_highlight td {	font-weight: bold; border-top: 2px solid black; border-bottom: 2px solid black; }
+div.sfc_table td.sfc_form {			white-space: nowrap; }
+div.sfc_table span.sfc_form {		display: inline-block; width: 10px; margin: 0 1px; border-radius: 2px; }
+div.sfc_table span.sfc_W {			background: #2A2; }
+div.sfc_table span.sfc_D {			background: orange; }
+div.sfc_table span.sfc_L {			background: #F33; }
+div.sfc_table div.sfc_footer {		display: block !important; text-align: right; }
 
-.statsfc_table .statsfc_championsleague td,
-.statsfc_table .statsfc_championsleaguequal td {	background-color: #9CE; }
-.statsfc_table .statsfc_uefacup td {				background-color: #9C4; }
-.statsfc_table .statsfc_relegation td {				background-color: #F77; }
+div.sfc_table td.sfc_team {			background-repeat: no-repeat; background-position: center left; background-size: 20px 20px; line-height: 25px; padding-left: 25px !important; }

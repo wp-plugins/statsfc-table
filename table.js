@@ -34,8 +34,8 @@ function StatsFC_Table(key) {
 		var domain		= this.domain;
 		var tableType	= this.tableType;
 		var highlight	= this.highlight;
-		var showBadges	= this.showBadges;
-		var showForm	= this.showForm;
+		var showBadges	= (this.showBadges === true || this.showBadges === 'true');
+		var showForm	= (this.showForm === true || this.showForm === 'true');
 
 		$j.getJSON(
 			domain + '/crowdscores/table.php?callback=?',

@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Table
 Plugin URI: https://statsfc.com/widgets/table
 Description: StatsFC League Table
-Version: 1.9.1
+Version: 1.9.2
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -27,7 +27,7 @@ License: GPL2
 
 define('STATSFC_TABLE_ID',      'StatsFC_Table');
 define('STATSFC_TABLE_NAME',    'StatsFC Table');
-define('STATSFC_TABLE_VERSION', '1.9.1');
+define('STATSFC_TABLE_VERSION', '1.9.2');
 
 /**
  * Adds StatsFC widget.
@@ -182,7 +182,7 @@ class StatsFC_Table extends WP_Widget
         $instance['highlight']   = strip_tags($new_instance['highlight']);
         $instance['rows']        = strip_tags($new_instance['rows']);
         $instance['date']        = strip_tags($new_instance['date']);
-        $instance['show_badges'] = strip_tags($instance['show_badges']);
+        $instance['show_badges'] = strip_tags($new_instance['show_badges']);
         $instance['show_form']   = strip_tags($new_instance['show_form']);
         $instance['default_css'] = strip_tags($new_instance['default_css']);
 
